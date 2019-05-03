@@ -1,40 +1,49 @@
 #pragma once
 
+//这是TianZer供自己学习使用的个人链表实现库
+
+
+//节点类，可以包含一个任意的数据类型
 template<typename T>
 class Node
 {
 public:
     T data; //自定义数据
     Node* next=0, * prev=0; //节点指针
-    int n;  //当前节点的编号
+    int n;  //当前节点的编号，用于给节点排位
     Node(int N = 0) {
         n = N;
     }
 };
 
+//链表管理类，使用List<typename> listname 即可声明一个链表
 template<typename T>
 class List
 {
 private:
+    //节点总数
     int total=0;
+    //头结点，尾节点，供内部使用的现有节点
     Node<T>* head = 0, * end = 0, * now = 0;
+    //内部函数，用于创建节点
     inline Node<T>* creat_node(int n) {
         return new Node<T>(n);
     }
+    //内部函数，用于查找指定位置的节点
     inline Node<T>* find_node(int n) {
         if (n <= (total / 2 + 1))   //判断从哪边遍历更快
         {
             Node<T>* p = head;
-            for (; p->n != n && p->next != 0; p = p->next);
-            if (p->n != n)
+            for (; p->n != n && p->next != 0; p = p->next);     //遍历链表
+            if (p->n != n)  //查找失败则返回NULL
                 return 0;
             else
-                return p;
+                return p;   //查找成功则返回节点指针
         }
         else
         {
             Node<T>* p = end;
-            for (; p->n != n && p->prev != 0; p = p->prev);
+            for (; p->n != n && p->prev != 0; p = p->prev);     //遍历链表
             if (p->n != n)
                 return 0;
             else
@@ -42,7 +51,7 @@ private:
         }
     }
 public:
-    //无参构造函数，默认生成一个节点
+    //无参构造函数，默认会生成一个节点
     List() {
         now = end = head = creat_node(0);
         head->prev = 0;
@@ -80,7 +89,8 @@ public:
             q = p;
         }
     }
-    //****************************插入***********************************
+    //****************************插入节点***********************************
+    //在链表末尾添加一个节点，并返回其地址
     Node<T>* Append_To_End() {
         end->next = creat_node(total);
         end->next->prev = end;
@@ -89,11 +99,12 @@ public:
         total++;
         return end;
     }
+    //在指定位置后面插入一个新节点，并返回其地址
     Node<T>* Append(int n) {
         now = find_node(n);
-        if (now == 0)
+        if (now == 0)   //判断是否查找失败，查找失败则返回NULL
             return 0;
-        else if (now == end)
+        else if (now == end)    //判断添加位置是否位于链表尾部
             return Append_To_End();
         else
         {
@@ -103,13 +114,14 @@ public:
             now->next = p->next;
             p->next->prev = now;
             p->next = now;
-            for (p = now->next; p != 0; p = p->next)
+            for (p = now->next; p != 0; p = p->next)    //将添加位置后的链表编号+1
                 p->n++;
-            total++;
-            return now;
+            total++;        //总结点数+1
+            return now;     //返回新加节点指针
         }
 
     }
+    //在链表头插入一个新节点，并返回其地址
     Node<T>* Insert_To_Head() {
         Node<T>* p = head;
         head = creat_node(0);
@@ -121,6 +133,7 @@ public:
         total++;
         return head;
     }
+    //在指定位置之前插入一个新节点，并返回其地址
     Node<T>* Insert(int n) {
         now = find_node(n);
         if (now == 0)
@@ -141,26 +154,29 @@ public:
             return now;
         }
     }
-    //****************************删除***********************************
+    //****************************删除节点***********************************
+    //删除尾节点
     void Earse_End() {
         end = end->prev;
         delete end->next;
         end->next = 0;
         total--;
     }
+    //删除头结点
     void Earse_Head() {
         head = head->next;
         delete head->prev;
         head->prev = 0;
         total--;
     }
+    //删除指定节点
     void Earse(int n) {
         now = find_node(n);
-        if (now == 0)
+        if (now == 0)       //查找失败则直接退出
             return;
-        else if (now == end)
+        else if (now == end)       //判断是否为尾节点
             Earse_End();
-        else if (now == head)
+        else if (now == head)       //判断是否为头节点
             Earse_Head();
         else
         {
@@ -168,12 +184,13 @@ public:
             now->prev->next = now->next;
             now->next->prev = now->prev;
             delete now;
-            for (; p != 0; p = p->next)
+            for (; p != 0; p = p->next)     //将删除位置后的节点编号-1
                 p->n--;
             total--;
         }
     }
-    //****************************辅助***********************************
+    //****************************辅助功能***********************************
+    //返回当前链表节点数
     int Size() {
         return total;
     }
@@ -197,12 +214,12 @@ public:
         for (p = head; p != 0; p = p->next)
             p->n = total - p->n - 1;
     }
-    //****************************算符***********************************
-    //检索链表节点
+    //****************************算符重载***********************************
+    //用[]检索链表节点
     T* operator[] (int n) {
         return &(find_node(n)->data);
     }
-    //链表相互赋值
+    //两个链表相互赋值
     const List<T>& operator=(const List<T>& l) {
         Node<T>* p = head, * q = l.head;
         if (l.total == total)
