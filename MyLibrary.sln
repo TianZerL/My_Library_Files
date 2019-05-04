@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "List", "List\List.vcxproj",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "readme", "readme", "{9FA9CC5F-3F57-4347-BD5D-CB5F0AB5EB52}"
 	ProjectSection(SolutionItems) = preProject
-		readme.md = readme.md
+		README.zh = README.zh
 	EndProjectSection
 EndProject
 Global
