@@ -1,9 +1,13 @@
+/*
+ * Copyleft (c) 2019 by TianZer.
+ * Some rights reserved.
+*/
 #pragma once
+#include<stdexcept>
 
-//这是TianZer供自己学习使用的个人链表实现库
 
 
-//节点类，可以包含一个任意的数据类型
+//节点类，可包含一个任意的数据类型
 template<typename T>
 class Node
 {
@@ -60,13 +64,15 @@ public:
     }
     //根据参数，生成n个节点
     List(int n) {
+        if (n < 1)
+            throw std::domain_error("The number of node must be greater than 1!");
         now = end = head = creat_node(0);
         head->prev = 0;
         head->next = 0;
         total++;
         for (; total < n; Append_To_End());
     }
-    //生成和另一个链表相同的链表
+    //复制构造函数，生成和另一个链表相同的链表
     List(const List<T>& l) {
         now = end = head = creat_node(0);
         head->prev = 0;
@@ -89,7 +95,7 @@ public:
             q = p;
         }
     }
-    //****************************插入节点***********************************
+    /****************************插入节点***********************************/
     //在链表末尾添加一个节点，并返回其地址
     Node<T>* Append_To_End() {
         end->next = creat_node(total);
@@ -102,8 +108,8 @@ public:
     //在指定位置后面插入一个新节点，并返回其地址
     Node<T>* Append(int n) {
         now = find_node(n);
-        if (now == 0)   //判断是否查找失败，查找失败则返回NULL
-            return 0;
+        if (now == 0)   //判断是否查找失败，查找失败则抛出错误
+            throw std::out_of_range("Cannot find this node!");
         else if (now == end)    //判断添加位置是否位于链表尾部
             return Append_To_End();
         else
@@ -136,8 +142,8 @@ public:
     //在指定位置之前插入一个新节点，并返回其地址
     Node<T>* Insert(int n) {
         now = find_node(n);
-        if (now == 0)
-            return 0;
+        if (now == 0)       //查找失败则抛出错误
+            throw std::out_of_range("Cannot find this node!");
         else if (now == head)
             return Insert_To_Head();
         else
@@ -154,7 +160,7 @@ public:
             return now;
         }
     }
-    //****************************删除节点***********************************
+    /****************************删除节点***********************************/
     //删除尾节点
     void Earse_End() {
         end = end->prev;
@@ -172,8 +178,8 @@ public:
     //删除指定节点
     void Earse(int n) {
         now = find_node(n);
-        if (now == 0)       //查找失败则直接退出
-            return;
+        if (now == 0)       //查找失败则抛出错误
+            throw std::out_of_range("Cannot find this node!");
         else if (now == end)       //判断是否为尾节点
             Earse_End();
         else if (now == head)       //判断是否为头节点
@@ -189,9 +195,9 @@ public:
             total--;
         }
     }
-    //****************************辅助功能***********************************
+    /****************************辅助功能***********************************/
     //返回当前链表节点数
-    int Size() {
+    int Size() const {
         return total;
     }
     //反序链表
@@ -214,10 +220,12 @@ public:
         for (p = head; p != 0; p = p->next)
             p->n = total - p->n - 1;
     }
-    //****************************算符重载***********************************
+    /****************************算符重载***********************************/
     //用[]检索链表节点
-    T* operator[] (int n) {
-        return &(find_node(n)->data);
+    T& operator[] (int n) {
+        if (n >= total || n < 0)      //查找失败则抛出错误
+            throw std::out_of_range("Out of range!");
+        return find_node(n)->data;
     }
     //两个链表相互赋值
     const List<T>& operator=(const List<T>& l) {
@@ -237,10 +245,10 @@ public:
             for (; p != 0 && q != 0; p = p->next, q = q->next)
                 p->data = q->data;
         }
-        return l;
+        return *this;
     }
     //比较两个链表的长度
-    bool operator ==(const List<T>& l) {
+    bool operator ==(const List<T>& l) const {
         if (l.total != total)
             return false;
         else
