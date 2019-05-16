@@ -98,6 +98,15 @@ public:
     /****************************插入节点***********************************/
     //在链表末尾添加一个节点，并返回其地址
     Node<T>* Append_To_End() {
+        if (end == 0)
+        {
+            end = creat_node(total);
+            head = end;
+            end->next = 0;
+            end->prev = 0;
+            total++;
+            return end;
+        }
         end->next = creat_node(total);
         end->next->prev = end;
         end = end->next;
@@ -129,6 +138,15 @@ public:
     }
     //在链表头插入一个新节点，并返回其地址
     Node<T>* Insert_To_Head() {
+        if (head == 0)
+        {
+            head = creat_node(total);
+            end = head;
+            head->next = 0;
+            head->prev = 0;
+            total++;
+            return head;
+        }
         Node<T>* p = head;
         head = creat_node(0);
         head->prev = 0;
@@ -219,6 +237,92 @@ public:
         end = t;
         for (p = head; p != 0; p = p->next)
             p->n = total - p->n - 1;
+    }
+    //合并链表
+    void Merge(const List<T>& l) {
+        Node<T>* p = end, * q = l.head;
+        do
+        {
+            Append_To_End();
+            p->next->data = q->data;
+            q = q->next;
+            p = p->next;
+        } while (q != 0);
+    }
+    //交换两个节点
+    void Swap(int n1, int n2) {
+        if (n1 < 0 || n2 < 0 || n1 >= total || n2 >= total)
+            throw std::out_of_range("Out of range!");
+        if (n1 == n2)
+            return;
+        T* data1 = &(find_node(n1)->data), * data2 = &(find_node(n2)->data), temp;
+        temp = *data1;
+        *data1 = *data2;
+        *data2 = temp;
+    }
+    //移除指定节点，从n1到n2，包括首尾，尽量不要利用该函数进行全链清除
+    void Remove(int n1, int n2) {
+        if (n1 < 0 || n2 < 0 || n1 >= total || n2 >= total)
+            throw std::out_of_range("Out of range!");
+        if (n1 > n2)
+            throw std::logic_error("Error logic");
+        if (n1 == n2)
+            Earse(n1);
+        if (n1 != 0 && n2 != total - 1)
+        {
+            Node<T>* p1 = find_node(n1 - 1);
+            Node<T>* p2 = find_node(n2 + 1);
+            Node<T>** pd = new Node<T> * [n2 - n1 + 1];
+            for (int i = 0; i <= n2 - n1; i++)
+                pd[i] = find_node(i + n1);
+            p1->next = p2;
+            p2->prev = p1;
+            for (int i = 0; i <= n2 - n1; i++)
+                delete pd[i];
+            for (; p2 != 0; p2 = p2->next)
+                p2->n -= n2 - n1 + 1;
+            total -= n2 - n1 + 1;
+            delete[]pd;
+        }
+        else if (n1 == 0 && n2 == total - 1)
+        {
+            Node<T>** pd = new Node<T> * [total];
+            for (int i = 0; i < total; i++)
+                pd[i] = find_node(i);
+            for (int i = 0; i < total; i++)
+                delete pd[i];
+            head = end = 0;
+            total = 0;
+            delete[]pd;
+        }
+        else if (n1 == 0 && n2 != total - 1)
+        {
+            Node<T>* p = find_node(n2 + 1);
+            Node<T>** pd = new Node<T> * [n2 + 1];
+            for (int i = 0; i <= n2; i++)
+                pd[i] = find_node(i);
+            head = p;
+            p->prev = 0;  
+            for (int i = 0; i <= n2; i++)
+                delete pd[i];
+            for (; p != 0; p = p->next)
+                p->n -= n2 - n1 + 1;
+            total -= n2 - n1 + 1;
+            delete[]pd;
+        }
+        else if (n1 != 0 && n2 == total - 1)
+        {
+            Node<T>* p = find_node(n1-1);
+            Node<T>** pd = new Node<T> * [total - n1];
+            for (int i = 0; i < total - n1; i++)
+                pd[i] = find_node(i + n1);
+            end = p;
+            p->next = 0;
+            for (int i = 0; i < total - n1; i++)
+                delete pd[i];
+            total -= n2 - n1 + 1;
+            delete[]pd;
+        }
     }
     /****************************算符重载***********************************/
     //用[]检索链表节点

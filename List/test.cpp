@@ -1,7 +1,29 @@
+// debug_new.cpp
+// compile by using: cl /EHsc /W4 /D_DEBUG /MDd debug_new.cpp
+#define _CRTDBG_MAP_ALLOC
+#include <cstdlib>
+#include <crtdbg.h>
+
+#ifdef _DEBUG
+#ifndef DBG_NEW
+#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#define new DBG_NEW
+#endif 
+#endif  // _DEBUG
+
 #include<iostream>
 #include"List.h"
 
 using namespace std;
+
+//MemLeakCheck
+void EnableMemLeakCheck()
+{
+    int tmpFlag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
+    tmpFlag |= _CRTDBG_LEAK_CHECK_DF;
+    _CrtSetDbgFlag(tmpFlag);
+}
+
 
 struct test
 {
@@ -9,8 +31,11 @@ struct test
     int b;
 };
 
+
 int main() {
-   //something mess for testing features.
+    //something mess for testing features.
+    //_CrtSetBreakAlloc(267);
+    EnableMemLeakCheck();
     List<test> l1;
     l1.Append_To_End();
     l1.Append_To_End();
@@ -61,10 +86,14 @@ int main() {
         cout << l1[i].a << endl;
     cout << endl;
 
-    l1 = l1 + l2;
+    l1.Merge(l2);
 
+    
+    l1.Swap(1, 2);
+    l1.Remove(0, 5);
+    l1.Insert_To_Head();
     for (int i = 0; i < l1.Size(); i++)
         cout << l1[i].a << endl;
-
+    //int* leak = new int[10];
     return 0;
 }
