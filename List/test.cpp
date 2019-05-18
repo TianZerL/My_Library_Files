@@ -89,9 +89,11 @@ int main() {
     l1.Merge(l2);
 
     
-    l1.Swap(1, 2);
-    l1.Remove(0, 5);
-    l1.Insert_To_Head();
+    //l1.Swap(1, 2);
+    //cout << l1.Size() << endl;
+    l1.Cut(4, 4);
+    //cout << l1.Size() << endl;
+    //l1.Insert_To_Head();
     for (int i = 0; i < l1.Size(); i++)
         cout << l1[i].a << endl;
     //int* leak = new int[10];

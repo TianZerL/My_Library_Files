@@ -264,7 +264,7 @@ public:
     void Remove(int n1, int n2) {
         if (n1 < 0 || n2 < 0 || n1 >= total || n2 >= total)
             throw std::out_of_range("Out of range!");
-        if (n1 > n2)
+        else if (n1 > n2)
             throw std::logic_error("Error logic");
         if (n1 == n2)
             Earse(n1);
@@ -322,6 +322,69 @@ public:
                 delete pd[i];
             total -= n2 - n1 + 1;
             delete[]pd;
+        }
+    }
+    //保留指定节点，从n1到n2，包括首尾巴
+    void Cut(int n1, int n2) {
+        if (n1 < 0 || n2 < 0 || n1 >= total || n2 >= total)
+            throw std::out_of_range("Out of range!");
+        else if (n1 > n2)
+            throw std::logic_error("Error logic");
+        if (n1 == 0 && n2 == total - 1)
+            return;
+        if (n1 == n2)
+        {
+            Node<T>** pd = new Node<T> * [total - 1];
+            Swap(n1, 0);
+            for (int i = 1; i < total; i++)
+                pd[i - 1] = find_node(i);
+            for (int i = 1; i < total; i++)
+                delete pd[i - 1];
+            end = head;
+            head->next = 0;
+            end->prev = 0;
+            head->n = 0;
+            total = 1;
+            delete[] pd;
+        }
+        else if (n1 == 0 && n2 != total - 1)
+        {
+            for (int i = 0; i < total - n2; i++)
+                Earse_End();
+        }
+        else if (n1 != 0 && n2 == total - 1)
+        {
+            Node<T>* temp = head;
+            Node<T>** pd = new Node<T> * [n1];
+            for (int i = 0; i < n1; i++)
+                pd[i] = find_node(i);
+            now = find_node(n1);
+            head = now;
+            now->prev = 0;
+            for (; now != 0; now = now->next)
+                now->n -= n1;
+            for (int i = 0; i < n1; i++)
+                delete pd[i];
+            total -= n1;
+            delete[] pd;
+        }
+        else if (n1 != 0 && n2 != total - 1)
+        {
+            for (int i = 0; i < total - n2; i++)
+                Earse_End();
+            Node<T> * temp = head;
+            Node<T>** pd = new Node<T> * [n1];
+            for (int i = 0; i < n1; i++)
+                pd[i] = find_node(i);
+            now = find_node(n1);
+            head = now;
+            now->prev = 0;
+            for (; now != 0; now = now->next)
+                now->n -= n1;
+            for (int i = 0; i < n1; i++)
+                delete pd[i];
+            total -= n1;
+            delete[] pd;
         }
     }
     /****************************算符重载***********************************/
