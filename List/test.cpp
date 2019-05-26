@@ -91,11 +91,15 @@ int main() {
     
     //l1.Swap(1, 2);
     //cout << l1.Size() << endl;
-    l1.Cut(4, 4);
+    //l1.Cut(4, 4);
     //cout << l1.Size() << endl;
     //l1.Insert_To_Head();
     for (int i = 0; i < l1.Size(); i++)
         cout << l1[i].a << endl;
     //int* leak = new int[10];
+    cout << endl;
+    cout << l1[1].a << endl;
+    l1.Earse_Head();
+    cout << l1[0].a << endl;
     return 0;
 }

@@ -188,9 +188,12 @@ public:
     }
     //删除头结点
     void Earse_Head() {
+        Node<T>* p = head->next;
         head = head->next;
         delete head->prev;
         head->prev = 0;
+        for (; p != 0; p = p->next)     //将删除位置后的节点编号-1
+            p->n--;
         total--;
     }
     //删除指定节点
